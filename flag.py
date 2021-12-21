@@ -5,68 +5,7 @@ NONE = 0
 CMP  = 1 # type supports equality and inequelity operators
 TCMP = 3 # type supports all comparison operators
 HASH = 4 # type can be hashed
-
-TEMPLATES = [
-    (TCMP | HASH, 0, 'int'),
-    (TCMP | HASH, 0, 'size_t'),
-    (TCMP | HASH, 0, 'uint32_t'),
-    (TCMP | HASH, 0, 'int32_t'),
-    (TCMP | HASH, 0, 'll'),
-    (TCMP | HASH, 0, 'unsigned ll int'),
-    (TCMP | HASH, 0, '__int128_t'),
-    (TCMP | HASH, 0, 'uint64_t'),
-    (TCMP | HASH, 0, 'int64_t'),
-    (NONE       , 0, 'std::mt19937_64'),
-    (NONE       , 0, 'std::string'),
-    (NONE       , 0, 'std::any'),
-    (NONE       , 0, 'null_type'),
-    (NONE       , 0, 'bool'),
-    (NONE       , 0, 'std::byte'),
-    (NONE       , 0, 'signed char'),
-    (NONE       , 0, 'unsigned char'),
-    (NONE       , 0, 'std::strong_ordering'),
-    (NONE       , 0, 'std::weak_ordering'),
-    (NONE       , 0, 'std::partial_ordering'),
-    (NONE       , 0, 'std::mutex'),
-    (NONE       , 0, 'std::thread'),
-    (NONE       , 0, 'std::bitset<262144>'),
-    (NONE       , 0, 'std::chrono::duration'),
-    (NONE       , 0, 'FILE'),
-    (NONE       , 0, 'std::ifstream'),
-    (NONE       , 0, 'std::ofstream'),
-    (NONE       , 1, '{}*'),
-    (NONE       , 1, '{}&'),
-    (NONE       , 1, '{}[]'),
-    (NONE       , 1, '{} const'),
-    (NONE       , 1, 'std::deque<{}>'),
-    (NONE       , 1, 'std::set<{}>'),
-    (NONE       , 1, 'std::multiset<{}>'),
-    (NONE       , 1, 'std::unordered_set<{}>'),
-    (NONE       , 1, 'std::unordered_multiset<{}>'),
-    (NONE       , 1, 'std::priority_queue<{}>'),
-    (NONE       , 1, 'std::array<{}, 2>'),
-    (NONE       , 1, 'std::array<{}, 3>'),
-    (NONE       , 1, 'std::vector<{}>'),
-    (NONE       , 1, 'std::unique_ptr<{}>'),
-    (NONE       , 1, 'std::shared_ptr<{}>'),
-    (NONE       , 1, 'std::weak_ptr<{}>'),
-    (NONE       , 1, 'std::auto_ptr<{}>'),
-    (NONE       , 1, 'std::optional<{}>'),
-    (NONE       , 1, 'std::span<{}>'),
-    (NONE       , 1, 'std::priority_queue<{0}, std::vector<{0}>, std::greater<{0}>>'),
-    (NONE       , 1, 'std::chrono::time_point<std::chrono::high_resolution_clock, std::chrono::duration<{}, std::ratio<1, 1000000000>>>'),
-    (NONE       , 1, '__gnu_pbds::tree<{0}, __gnu_pbds::null_type, std::less<{0}>, __gnu_pbds::rb_tree_tag, __gnu_pbds::tree_order_statistics_node_update>'),
-    (NONE       , 2, 'std::pair<{}, {}>'),
-    (NONE       , 2, 'std::variant<{}, {}>'),
-    (NONE       , 2, 'std::map<{}, {}>'),
-    (NONE       , 2, 'std::unordered_map<{}, {}>'),
-    (NONE       , 2, 'std::multimap<{}, {}>'),
-    (NONE       , 2, 'std::unordered_multimap<{}, {}>'),
-    (NONE       , 2, 'std::conditional_t<true, {}, {}>'),
-    (NONE       , 2, 'std::conditional_t<false, {}, {}>'),
-    (NONE       , 3, 'std::tuple<{}, {}, {}>'),
-    (NONE       , 4, 'std::tuple<{}, {}, {}, {}>')
-]
+ALL  = TCMP | HASH
 
 # definisci la curva di probabilita'
 # f(x) = e^kx
@@ -86,12 +25,78 @@ def choose(k, s):
     x = math.log(y * k) / k
     return s[int(x)]
 
-def create_str(k):
-    _, c, f = choose(k, TEMPLATES)
-    return f.format(*(create_str(k - 0.10 - random.uniform(0.01, 0.1)) for i in range(c)))
+def cs(flags2, flags3):
+    def f(k, flags4):
+        flags = flags2 | flags3 & flags4
+        l = [(g, f) for op, g, f in TEMPLATES if op & flags == flags]
+        gens, f = choose(k, l)
+        return f.format(*(g(k - 0.10 - random.uniform(0.01, 0.1), flags) for g in gens))
+    return f
 
 def craft_flag():
-    return f'`{create_str(0.2)} flag[10];`'
+    return f'`{cs(NONE, ALL)(0.2, NONE)} flag[10];`'
+
+TEMPLATES = [
+    (ALL , [], 'int'),
+    (ALL , [], 'size_t'),
+    (ALL , [], 'uint32_t'),
+    (ALL , [], 'int32_t'),
+    (ALL , [], 'll'),
+    (ALL , [], 'unsigned ll int'),
+    (ALL , [], '__int128_t'),
+    (ALL , [], 'uint64_t'),
+    (ALL , [], 'int64_t'),
+    (NONE, [], 'std::mt19937_64'),
+    (NONE, [], 'std::string'),
+    (NONE, [], 'std::any'),
+    (NONE, [], 'null_type'),
+    (NONE, [], 'bool'),
+    (NONE, [], 'std::byte'),
+    (NONE, [], 'signed char'),
+    (NONE, [], 'unsigned char'),
+    (NONE, [], 'std::strong_ordering'),
+    (NONE, [], 'std::weak_ordering'),
+    (NONE, [], 'std::partial_ordering'),
+    (NONE, [], 'std::mutex'),
+    (NONE, [], 'std::thread'),
+    (NONE, [], 'std::bitset<262144>'),
+    (NONE, [], 'std::chrono::duration'),
+    (NONE, [], 'FILE'),
+    (NONE, [], 'std::ifstream'),
+    (NONE, [], 'std::ofstream'),
+    (NONE, [cs(NONE, ALL)], '{}*'),
+    (NONE, [cs(NONE, ALL)], '{}&'),
+    (NONE, [cs(NONE, ALL)], '{}[]'),
+    (NONE, [cs(NONE, ALL)], '{} const'),
+    (NONE, [cs(NONE, ALL)], 'std::deque<{}>'),
+    (NONE, [cs(NONE, ALL)], 'std::set<{}>'),
+    (NONE, [cs(NONE, ALL)], 'std::multiset<{}>'),
+    (NONE, [cs(NONE, ALL)], 'std::unordered_set<{}>'),
+    (NONE, [cs(NONE, ALL)], 'std::unordered_multiset<{}>'),
+    (NONE, [cs(NONE, ALL)], 'std::priority_queue<{}>'),
+    (NONE, [cs(NONE, ALL)], 'std::array<{}, 2>'),
+    (NONE, [cs(NONE, ALL)], 'std::array<{}, 3>'),
+    (NONE, [cs(NONE, ALL)], 'std::vector<{}>'),
+    (NONE, [cs(NONE, ALL)], 'std::unique_ptr<{}>'),
+    (NONE, [cs(NONE, ALL)], 'std::shared_ptr<{}>'),
+    (NONE, [cs(NONE, ALL)], 'std::weak_ptr<{}>'),
+    (NONE, [cs(NONE, ALL)], 'std::auto_ptr<{}>'),
+    (NONE, [cs(NONE, ALL)], 'std::optional<{}>'),
+    (NONE, [cs(NONE, ALL)], 'std::span<{}>'),
+    (NONE, [cs(NONE, ALL)], 'std::priority_queue<{0}, std::vector<{0}>, std::greater<{0}>>'),
+    (NONE, [cs(NONE, ALL)], 'std::chrono::time_point<std::chrono::high_resolution_clock, std::chrono::duration<{}, std::ratio<1, 1000000000>>>'),
+    (NONE, [cs(NONE, ALL)], '__gnu_pbds::tree<{0}, __gnu_pbds::null_type, std::less<{0}>, __gnu_pbds::rb_tree_tag, __gnu_pbds::tree_order_statistics_node_update>'),
+    (NONE, [cs(NONE, ALL), cs(NONE, ALL)], 'std::pair<{}, {}>'),
+    (NONE, [cs(NONE, ALL), cs(NONE, ALL)], 'std::variant<{}, {}>'),
+    (NONE, [cs(NONE, ALL), cs(NONE, ALL)], 'std::map<{}, {}>'),
+    (NONE, [cs(NONE, ALL), cs(NONE, ALL)], 'std::unordered_map<{}, {}>'),
+    (NONE, [cs(NONE, ALL), cs(NONE, ALL)], 'std::multimap<{}, {}>'),
+    (NONE, [cs(NONE, ALL), cs(NONE, ALL)], 'std::unordered_multimap<{}, {}>'),
+    (NONE, [cs(NONE, ALL), cs(NONE, ALL)], 'std::conditional_t<true, {}, {}>'),
+    (NONE, [cs(NONE, ALL), cs(NONE, ALL)], 'std::conditional_t<false, {}, {}>'),
+    (NONE, [cs(NONE, ALL), cs(NONE, ALL), cs(NONE, ALL)], 'std::tuple<{}, {}, {}>'),
+    (NONE, [cs(NONE, ALL), cs(NONE, ALL), cs(NONE, ALL), cs(NONE, ALL)], 'std::tuple<{}, {}, {}, {}>')
+]
 
 if __name__ == '__main__':
     print(craft_flag())
