@@ -48,8 +48,9 @@ TEMPLATES = [
     (1, 'std::auto_ptr<{}>'),
     (1, 'std::optional<{}>'),
     (1, 'std::span<{}>'),
+    (1, 'std::priority_queue<{0}, std::vector<{0}>, std::greater<{0}>>'),
     (1, 'std::chrono::time_point<std::chrono::high_resolution_clock, std::chrono::duration<{}, std::ratio<1, 1000000000>>>'),
-    (2, '__gnu_pbds::tree<{}, __gnu_pbds::null_type, std::less<{}>, __gnu_pbds::rb_tree_tag, __gnu_pbds::tree_order_statistics_node_update>'),
+    (1, '__gnu_pbds::tree<{0}, __gnu_pbds::null_type, std::less<{0}>, __gnu_pbds::rb_tree_tag, __gnu_pbds::tree_order_statistics_node_update>'),
     (2, 'std::pair<{}, {}>'),
     (2, 'std::variant<{}, {}>'),
 	(2, 'std::map<{}, {}>'),
@@ -58,7 +59,6 @@ TEMPLATES = [
 	(2, 'std::unordered_multimap<{}, {}>'),
     (2, 'std::conditional_t<true, {}, {}>'),
     (2, 'std::conditional_t<false, {}, {}>'),
-    (3, 'std::priority_queue<{}, std::vector<{}>, std::greater<{}>>'),
     (3, 'std::tuple<{}, {}, {}>'),
     (4, 'std::tuple<{}, {}, {}, {}>')
 ]
