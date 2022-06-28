@@ -7,7 +7,8 @@ NONE = 0
 CMP  = 1 # type supports equality and inequelity operators
 TCMP = 3 # type supports all comparison operators
 HASH = 5 # type can be hashed
-ALL  = TCMP | HASH
+DEFC = 8 # default constructor
+ALL  = TCMP | HASH | DEFC
 
 # definisci la curva di probabilita'
 # f(x) = e^kx
@@ -36,7 +37,7 @@ def cs(flags2, flags3):
     return f
 
 def craft_flag(n : int = 10):
-    return f'`{cs(NONE, ALL)(0.2, NONE)} flag[{n}];`'
+    return f'`{cs(NONE, ALL)(0.2, DEFC)} flag[{n}];`'
 
 TEMPLATES = [
     (ALL , [], 'int'),
@@ -48,9 +49,9 @@ TEMPLATES = [
     (ALL , [], '__int128_t'),
     (ALL , [], 'uint64_t'),
     (ALL , [], 'int64_t'),
-    (NONE, [], 'std::mt19937_64'),
+    (DEFC, [], 'std::mt19937_64'),
     (ALL , [], 'std::string'),
-    (NONE, [], 'std::any'),
+    (DEFC, [], 'std::any'),
     # (NONE, [], 'null_type'),
     (ALL , [], 'bool'),
     (ALL , [], 'std::byte'),
@@ -59,45 +60,45 @@ TEMPLATES = [
     (CMP , [], 'std::strong_ordering'),
     (CMP , [], 'std::weak_ordering'),
     (CMP , [], 'std::partial_ordering'),
-    (NONE, [], 'std::mutex'),
-    (NONE, [], 'std::thread'),
-    (CMP | HASH, [], 'std::bitset<262144>'),
-    (ALL , [], 'std::chrono::seconds'),
-    (NONE, [], 'FILE'),
-    (NONE, [], 'std::ifstream'),
-    (NONE, [], 'std::ofstream'),
-    (ALL , [cs(NONE, ALL)], '{} *'),
+    (DEFC, [], 'std::mutex'),
+    (DEFC, [], 'std::thread'),
+    (CMP | HASH | DEFC, [], 'std::bitset<262144>'),
+    (TCMP | DEFC, [], 'std::chrono::seconds'),
+    (DEFC, [], 'FILE'),
+    (DEFC, [], 'std::ifstream'),
+    (DEFC, [], 'std::ofstream'),
+    (ALL , [cs(NONE, NONE)], '{} *'),
     # (ALL , [cs(NONE, ALL)], '{}&'),
     # (ALL , [cs(NONE, ALL)], '{}[]'),
     # (ALL , [cs(NONE, ALL)], '{} const'),
-    (TCMP, [cs(NONE, ALL)], 'std::deque<{}>'),
-    (TCMP, [cs(TCMP, ALL)], 'std::set<{}>'),
-    (TCMP, [cs(TCMP, ALL)], 'std::multiset<{}>'),
-    (CMP , [cs(HASH, ALL)], 'std::unordered_set<{}>'),
-    (CMP , [cs(HASH, ALL)], 'std::unordered_multiset<{}>'),
-    (NONE, [cs(TCMP, ALL)], 'std::priority_queue<{}>'),
-    (TCMP, [cs(NONE, ALL)], 'std::array<{}, 2>'),
-    (TCMP, [cs(NONE, ALL)], 'std::array<{}, 3>'),
-    (TCMP, [cs(NONE, ALL)], 'std::vector<{}>'),
-    (ALL , [cs(NONE, NONE)], 'std::unique_ptr<{}>'),
+    (TCMP | DEFC, [cs(NONE, TCMP)], 'std::deque<{}>'),
+    (TCMP | DEFC, [cs(TCMP, NONE)], 'std::set<{}>'),
+    (TCMP | DEFC, [cs(TCMP, NONE)], 'std::multiset<{}>'),
+    (CMP | DEFC, [cs(HASH, NONE)], 'std::unordered_set<{}>'),
+    (CMP | DEFC, [cs(HASH, NONE)], 'std::unordered_multiset<{}>'),
+    (DEFC, [cs(TCMP, NONE)], 'std::priority_queue<{}>'),
+    (TCMP | DEFC, [cs(NONE, TCMP | DEFC)], 'std::array<{}, 2>'),
+    (TCMP | DEFC, [cs(NONE, TCMP | DEFC)], 'std::array<{}, 3>'),
+    (TCMP | DEFC, [cs(NONE, TCMP)], 'std::vector<{}>'),
+    (TCMP | DEFC, [cs(NONE, NONE)], 'std::unique_ptr<{}>'),
     (ALL , [cs(NONE, NONE)], 'std::shared_ptr<{}>'),
-    (NONE, [cs(NONE, ALL)], 'std::weak_ptr<{}>'),
+    (DEFC, [cs(NONE, NONE)], 'std::weak_ptr<{}>'),
     # (NONE, [cs(NONE, ALL)], 'std::auto_ptr<{}>'),
-    (ALL , [cs(NONE, ALL)], 'std::optional<{}>'),
-    (NONE, [cs(NONE, ALL)], 'std::span<{}>'),
-    (NONE, [cs(NONE, ALL)], 'std::priority_queue<{0}, std::vector<{0}>, std::greater<{0}>>'),
+    (ALL , [cs(NONE, NONE)], 'std::optional<{}>'),
+    (DEFC, [cs(NONE, ALL)], 'std::span<{}>'),
+    (DEFC, [cs(TCMP, NONE)], 'std::priority_queue<{0}, std::vector<{0}>, std::greater<{0}>>'),
     # (NONE, [cs(NONE, ALL)], 'std::chrono::time_point<std::chrono::high_resolution_clock, std::chrono::duration<{}, std::ratio<1, 1000000000>>>'),
-    (NONE, [cs(TCMP, ALL)], '__gnu_pbds::tree<{0}, __gnu_pbds::null_type, std::less<{0}>, __gnu_pbds::rb_tree_tag, __gnu_pbds::tree_order_statistics_node_update>'),
-    (TCMP, [cs(NONE, ALL), cs(NONE, ALL)], 'std::pair<{}, {}>'),
-    (ALL , [cs(NONE, ALL), cs(NONE, ALL)], 'std::variant<{}, {}>'),
-    (TCMP, [cs(TCMP, ALL), cs(NONE, ALL)], 'std::map<{}, {}>'),
-    (TCMP, [cs(TCMP, ALL), cs(NONE, ALL)], 'std::multimap<{}, {}>'),
-    (CMP , [cs(HASH, ALL), cs(NONE, ALL)], 'std::unordered_map<{}, {}>'),
-    (CMP , [cs(HASH, ALL), cs(NONE, ALL)], 'std::unordered_multimap<{}, {}>'),
-    (ALL , [cs(NONE, ALL), cs(NONE, ALL)], 'std::conditional_t<true, {}, {}>'),
-    (ALL , [cs(NONE, ALL), cs(NONE, ALL)], 'std::conditional_t<false, {}, {}>'),
-    (TCMP, [cs(NONE, ALL), cs(NONE, ALL), cs(NONE, ALL)], 'std::tuple<{}, {}, {}>'),
-    (TCMP, [cs(NONE, ALL), cs(NONE, ALL), cs(NONE, ALL), cs(NONE, ALL)], 'std::tuple<{}, {}, {}, {}>')
+    (DEFC, [cs(TCMP, NONE)], '__gnu_pbds::tree<{0}, __gnu_pbds::null_type, std::less<{0}>, __gnu_pbds::rb_tree_tag, __gnu_pbds::tree_order_statistics_node_update>'),
+    (TCMP | DEFC, [cs(NONE, ALL), cs(NONE, ALL)], 'std::pair<{}, {}>'),
+    (ALL , [cs(NONE, TCMP | HASH), cs(NONE, TCMP | HASH)], 'std::variant<{}, {}>'),
+    (TCMP | DEFC, [cs(TCMP, NONE), cs(NONE, TCMP)], 'std::map<{}, {}>'),
+    (TCMP | DEFC, [cs(TCMP, NONE), cs(NONE, TCMP)], 'std::multimap<{}, {}>'),
+    (CMP | DEFC, [cs(HASH, NONE), cs(NONE, CMP)], 'std::unordered_map<{}, {}>'),
+    (CMP | DEFC, [cs(HASH, NONE), cs(NONE, CMP)], 'std::unordered_multimap<{}, {}>'),
+    (ALL , [cs(NONE, ALL), cs(NONE, NONE)], 'std::conditional_t<true, {}, {}>'),
+    (ALL , [cs(NONE, NONE), cs(NONE, ALL)], 'std::conditional_t<false, {}, {}>'),
+    (TCMP | DEFC, [cs(NONE, ALL), cs(NONE, ALL), cs(NONE, ALL)], 'std::tuple<{}, {}, {}>'),
+    (TCMP | DEFC, [cs(NONE, ALL), cs(NONE, ALL), cs(NONE, ALL), cs(NONE, ALL)], 'std::tuple<{}, {}, {}, {}>'),
 ]
 
 if __name__ == '__main__':
