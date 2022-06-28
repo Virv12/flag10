@@ -1,4 +1,5 @@
 import logging
+import re
 
 from telegram import Update, ForceReply, ParseMode
 from telegram.ext import Updater, CommandHandler, MessageHandler, Filters, CallbackContext
@@ -14,7 +15,13 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 def flag_handler(update: Update, context: CallbackContext):
-    update.message.reply_text(craft_flag(), parse_mode=ParseMode.MARKDOWN)
+    if re.match(r'^/flag\[\d+\]$', update.message.text):
+        n = int(re.search(r'\[(\d+)\]', update.message.text).group(1))
+        flag = craft_flag(n)
+    else:
+        flag = craft_flag()
+
+    update.message.reply_text(flag, parse_mode=ParseMode.MARKDOWN)
 
 def sub_handler(update: Update, context: CallbackContext):
     update.message.reply_text(get_sub(), parse_mode=ParseMode.MARKDOWN)

@@ -1,5 +1,7 @@
 import math
 import random
+import sys
+import re
 
 NONE = 0
 CMP  = 1 # type supports equality and inequelity operators
@@ -33,8 +35,8 @@ def cs(flags2, flags3):
         return f.format(*(g(k - 0.10 - random.uniform(0.01, 0.1), flags) for g in gens))
     return f
 
-def craft_flag():
-    return f'`{cs(NONE, ALL)(0.2, NONE)} flag[10];`'
+def craft_flag(n : int = 10):
+    return f'`{cs(NONE, ALL)(0.2, NONE)} flag[{n}];`'
 
 TEMPLATES = [
     (ALL , [], 'int'),
@@ -99,4 +101,14 @@ TEMPLATES = [
 ]
 
 if __name__ == '__main__':
-    print(craft_flag())
+    if (len(sys.argv) > 1):
+        if re.match(r'^\[\d+\]$', sys.argv[1]):
+            n = int(re.search(r'^\[(\d+)\]$', sys.argv[1]).group(1))
+            print(craft_flag(n))
+        else:
+            print('Usage: python3 flag.py [N]')
+            print('N is the number of flags to generate')
+            print('If N is not specified, 10 flags will be generated')
+            exit(0)
+    else:
+        print(craft_flag())
