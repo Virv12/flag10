@@ -1,8 +1,8 @@
 import logging
 import re
 
-from telegram import Update, ForceReply, ParseMode
-from telegram.ext import Updater, CommandHandler, MessageHandler, Filters, CallbackContext
+from telegram import Update, ParseMode
+from telegram.ext import Updater, CommandHandler, CallbackContext
 
 from flag import craft_flag
 from sub import get_sub
@@ -15,8 +15,8 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 def flag_handler(update: Update, context: CallbackContext):
-    if re.match(r'^/flag\[\d+\]$', update.message.text):
-        n = int(re.search(r'\[(\d+)\]', update.message.text).group(1))
+    if m := re.match(r'^/flag\[(\d+)\]$', update.message.text):
+        n = int(m.group(1))
         flag = craft_flag(n)
     else:
         flag = craft_flag()
@@ -28,13 +28,12 @@ def sub_handler(update: Update, context: CallbackContext):
 
 def main():
     token = open('.token').read().strip()
+
     # Create the Updater and pass it your bot's token.
     updater = Updater(token)
     dispatcher = updater.dispatcher
     dispatcher.add_handler(CommandHandler('flag', flag_handler))
     dispatcher.add_handler(CommandHandler('sub', sub_handler))
-
-    # dispatcher.add_handler(MessageHandler(Filters.text & ~Filters.command, flag_handler))
 
     # Start the Bot
     updater.start_polling()

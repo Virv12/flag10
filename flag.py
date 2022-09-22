@@ -102,9 +102,9 @@ TEMPLATES = [
 ]
 
 if __name__ == '__main__':
-    if (len(sys.argv) > 1):
-        if re.match(r'^\[\d+\]$', sys.argv[1]):
-            n = int(re.search(r'^\[(\d+)\]$', sys.argv[1]).group(1))
+    if len(sys.argv) > 1:
+        if m := re.match(r'^\[(\d+)\]$', sys.argv[1]):
+            n = int(m.group(1))
             print(craft_flag(n))
         else:
             print('Usage: python3 flag.py [N]')
