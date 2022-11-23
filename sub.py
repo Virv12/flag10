@@ -6,19 +6,6 @@ from bs4 import BeautifulSoup
 import re
 from Crypto.Cipher import AES
 
-def get_cookie():
-    html = requests.get("https://codeforces.com").text
-    str_a = re.search(r'a=toNumbers\("([a-f0-9]{32})"\)', html).group(1)
-    str_b = re.search(r'b=toNumbers\("([a-f0-9]{32})"\)', html).group(1)
-    str_c = re.search(r'c=toNumbers\("([a-f0-9]{32})"\)', html).group(1)
-
-    a = bytes.fromhex(str_a)
-    b = bytes.fromhex(str_b)
-    c = bytes.fromhex(str_c)
-
-    aes = AES.new(a, AES.MODE_CBC, iv=b)
-    return {"RCPC": aes.decrypt(c).hex()}
-
 def time_cache(tl):
     def inner(f):
         lock = threading.Lock()
@@ -36,6 +23,20 @@ def time_cache(tl):
                 return res
         return foo
     return inner
+
+@time_cache(3600 * 24)
+def get_cookie():
+    html = requests.get("https://codeforces.com").text
+    str_a = re.search(r'a=toNumbers\("([a-f0-9]{32})"\)', html).group(1)
+    str_b = re.search(r'b=toNumbers\("([a-f0-9]{32})"\)', html).group(1)
+    str_c = re.search(r'c=toNumbers\("([a-f0-9]{32})"\)', html).group(1)
+
+    a = bytes.fromhex(str_a)
+    b = bytes.fromhex(str_b)
+    c = bytes.fromhex(str_c)
+
+    aes = AES.new(a, AES.MODE_CBC, iv=b)
+    return {"RCPC": aes.decrypt(c).hex()}
 
 @time_cache(3600)
 def get_list():
