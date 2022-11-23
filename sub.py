@@ -3,6 +3,21 @@ import requests
 import threading
 import time
 from bs4 import BeautifulSoup
+import re
+from Crypto.Cipher import AES
+
+def get_cookie():
+    html = requests.get("https://codeforces.com").text
+    str_a = re.search(r'a=toNumbers\("([a-f0-9]{32})"\)', html).group(1)
+    str_b = re.search(r'b=toNumbers\("([a-f0-9]{32})"\)', html).group(1)
+    str_c = re.search(r'c=toNumbers\("([a-f0-9]{32})"\)', html).group(1)
+
+    a = bytes.fromhex(str_a)
+    b = bytes.fromhex(str_b)
+    c = bytes.fromhex(str_c)
+
+    aes = AES.new(a, AES.MODE_CBC, iv=b)
+    return {"RCPC": aes.decrypt(c).hex()}
 
 def time_cache(tl):
     def inner(f):
@@ -31,7 +46,7 @@ def get_sub():
     r = random.choice(get_list())
     id, contest_id = r['id'], r['contestId']
 
-    html = requests.get(f'https://codeforces.com/contest/{contest_id}/submission/{id}').text
+    html = requests.get(f'https://codeforces.com/contest/{contest_id}/submission/{id}', cookies=get_cookie()).text
     soup = BeautifulSoup(html, "html.parser")
     problem = r['problem']
 
