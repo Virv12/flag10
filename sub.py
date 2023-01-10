@@ -47,7 +47,11 @@ def get_sub():
     r = random.choice(get_list())
     id, contest_id = r['id'], r['contestId']
 
-    html = requests.get(f'https://codeforces.com/contest/{contest_id}/submission/{id}', cookies=get_cookie()).text
+    try:
+        cookies = get_cookie()
+    except:
+        cookies = None
+    html = requests.get(f'https://codeforces.com/contest/{contest_id}/submission/{id}', cookies=cookies).text
     soup = BeautifulSoup(html, "html.parser")
     problem = r['problem']
 
