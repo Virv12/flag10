@@ -1,0 +1,15 @@
+[package]
+name = "flag10"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+log = { version = "0.4" }
+rand = { version = "0.8" }
+simple_logger = { version = "4.0", default-features = false, features = ["colors"] }
+teloxide = { version = "0.11", default-features = false, features = ["macros", "ctrlc_handler", "rustls"] }
+tokio = { version = "1.24", features = ["macros", "rt", "rt-multi-thread"] }
+
+[profile.release]
+lto = true
+codegen-units = 1

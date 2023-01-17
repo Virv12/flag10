@@ -1,2 +1,4 @@
-__pycache__
-.token
+/target
+/.token
+/docker/flag10
+/docker/.token
