@@ -1,3 +1,5 @@
+#![cfg_attr(any(feature = "flag", feature = "sub"), allow(dead_code), allow(unused_imports))]
+
 use std::fs;
 use teloxide::{prelude::*, types::ParseMode, utils::command::BotCommands};
 
@@ -32,6 +34,7 @@ async fn answer(bot: Bot, msg: Message, cmd: Command) -> ResponseResult<()> {
 }
 
 #[tokio::main]
+#[cfg(not(any(feature = "flag", feature = "sub")))]
 async fn main() {
     simple_logger::init_with_level(log::Level::Debug).unwrap();
     log::info!("Starting flag10 bot...");
@@ -39,4 +42,16 @@ async fn main() {
     let bot = Bot::new(token);
     bot.set_my_commands(Command::bot_commands()).await.unwrap();
     Command::repl(bot, answer).await;
+}
+
+#[tokio::main]
+#[cfg(feature = "flag")]
+async fn main() {
+    println!("{}", flag::get_flag().await);
+}
+
+#[tokio::main]
+#[cfg(feature = "sub")]
+async fn main() {
+    println!("{}", sub::get_sub().await);
 }
