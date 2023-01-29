@@ -1,4 +1,8 @@
-#![cfg_attr(any(feature = "flag", feature = "sub"), allow(dead_code), allow(unused_imports))]
+#![cfg_attr(
+    any(feature = "flag", feature = "sub"),
+    allow(dead_code),
+    allow(unused_imports)
+)]
 
 use std::fs;
 use teloxide::{prelude::*, types::ParseMode, utils::command::BotCommands};
@@ -24,10 +28,14 @@ async fn answer(bot: Bot, msg: Message, cmd: Command) -> ResponseResult<()> {
                 .await?;
         }
         Command::Sub => {
-            let sub = sub::get_sub().await;
-            bot.send_message(msg.chat.id, sub)
-                .parse_mode(ParseMode::MarkdownV2)
-                .await?;
+            let sub = sub::get_sub().await.map_err(|e| {
+                log::error!("Error while getting sub: {}", e);
+            });
+            if let Ok(sub) = sub {
+                bot.send_message(msg.chat.id, sub)
+                    .parse_mode(ParseMode::MarkdownV2)
+                    .await?;
+            }
         }
     }
     Ok(())
@@ -36,7 +44,7 @@ async fn answer(bot: Bot, msg: Message, cmd: Command) -> ResponseResult<()> {
 #[tokio::main]
 #[cfg(not(any(feature = "flag", feature = "sub")))]
 async fn main() {
-    simple_logger::init_with_level(log::Level::Debug).unwrap();
+    simple_logger::init_with_level(log::Level::Info).unwrap();
     log::info!("Starting flag10 bot...");
     let token = fs::read_to_string(".token").expect("Failed to read token");
     let bot = Bot::new(token);
@@ -52,6 +60,7 @@ async fn main() {
 
 #[tokio::main]
 #[cfg(feature = "sub")]
-async fn main() {
-    println!("{}", sub::get_sub().await);
+async fn main() -> Result<(), Box<dyn std::error::Error>> {
+    println!("{}", sub::get_sub().await?);
+    Ok(())
 }
