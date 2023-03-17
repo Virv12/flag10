@@ -1,0 +1,25 @@
+name: CD
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  docker:
+    name: Docker
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+      - name: Login to ghcr.io
+        uses: docker/login-action@v2
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.FLAG10_PUBLISH }}
+      - name: Build Image
+        run: |
+          docker buildx build . \
+            --push \
+            -t ghcr.io/virv12/flag10:latest
