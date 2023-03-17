@@ -4,15 +4,15 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-lazy_static = "1.4.0"
-log = { version = "0.4" }
-rand = { version = "0.8" }
-reqwest = { version = "0.11.14", default-features = false, features = ["rustls-tls"] }
-scraper = { version = "0.14.0", default-features = false }
-serde = { version = "1.0.152", features = ["derive"] }
+lazy_static = "1.4"
+log = "0.4"
+rand = "0.8"
+reqwest = { version = "0.11", default-features = false, features = ["rustls-tls"] }
+scraper = { version = "0.15", default-features = false }
+serde = { version = "1.0", features = ["derive"] }
 simple_logger = { version = "4.0", default-features = false, features = ["colors"] }
-teloxide = { version = "0.11", default-features = false, features = ["macros", "ctrlc_handler", "rustls"] }
-tokio = { version = "1.24", features = ["macros", "rt", "rt-multi-thread"] }
+teloxide = { version = "0.12", default-features = false, features = ["macros", "ctrlc_handler", "rustls"] }
+tokio = { version = "1.26", features = ["macros", "rt", "rt-multi-thread"] }
 
 [features]
 flag = []

@@ -12,4 +12,3 @@ RUN RUSTFLAGS='-C target-feature=+crt-static' cargo build --release --target x86
 FROM scratch
 COPY --from=builder /app/flag10 /
 CMD ["/flag10"]
-
