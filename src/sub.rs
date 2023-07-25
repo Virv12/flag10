@@ -48,7 +48,7 @@ async fn get_list() -> Result<Vec<Sub>, Box<dyn std::error::Error>> {
     Ok(subs)
 }
 
-pub async fn get_sub() -> Result<String, Box<dyn std::error::Error>> {
+pub async fn get() -> Result<String, Box<dyn std::error::Error>> {
     let list = get_list().await?;
     let Sub {
         id,
@@ -63,10 +63,7 @@ pub async fn get_sub() -> Result<String, Box<dyn std::error::Error>> {
 
     // let cookies = reqwest::CookieJar::new();
 
-    let url = format!(
-        "https://codeforces.com/contest/{}/submission/{}",
-        contest_id, id
-    );
+    let url = format!("https://codeforces.com/contest/{contest_id}/submission/{id}",);
     let html = reqwest::get(&url).await?.text().await?;
     let soup = Html::parse_document(&html);
     let code = soup

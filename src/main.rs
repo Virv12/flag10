@@ -1,3 +1,4 @@
+#![warn(clippy::all, clippy::pedantic)]
 #![cfg_attr(
     any(feature = "flag", feature = "sub"),
     allow(dead_code),
@@ -22,13 +23,13 @@ enum Command {
 async fn answer(bot: Bot, msg: Message, cmd: Command) -> ResponseResult<()> {
     match cmd {
         Command::Flag => {
-            let flag = flag::get_flag().await;
+            let flag = flag::get();
             bot.send_message(msg.chat.id, flag)
                 .parse_mode(ParseMode::MarkdownV2)
                 .await?;
         }
         Command::Sub => {
-            let sub = sub::get_sub().await.map_err(|e| {
+            let sub = sub::get().await.map_err(|e| {
                 log::error!("Error while getting sub: {}", e);
             });
             if let Ok(sub) = sub {
@@ -52,15 +53,14 @@ async fn main() {
     Command::repl(bot, answer).await;
 }
 
-#[tokio::main]
 #[cfg(feature = "flag")]
-async fn main() {
-    println!("{}", flag::get_flag().await);
+fn main() {
+    println!("{}", flag::get());
 }
 
 #[tokio::main]
 #[cfg(feature = "sub")]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
-    println!("{}", sub::get_sub().await?);
+    println!("{}", sub::get().await?);
     Ok(())
 }

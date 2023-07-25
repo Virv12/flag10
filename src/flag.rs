@@ -40,7 +40,7 @@ fn gen_type(out: &mut String, k: f64, flags: u32) {
     }
 }
 
-pub async fn get_flag() -> String {
+pub fn get() -> String {
     let mut out = String::new();
     out.push('`');
     gen_type(&mut out, 0.2, DEFC);
