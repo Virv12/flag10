@@ -7,10 +7,10 @@ edition = "2021"
 lazy_static = "1.4"
 log = "0.4"
 rand = "0.8"
-reqwest = { version = "0.11", default-features = false, features = ["rustls-tls"] }
-scraper = { version = "0.15", default-features = false }
+reqwest = { version = "0.12", default-features = false, features = ["rustls-tls", "json"] }
+scraper = { version = "0.19", default-features = false }
 serde = { version = "1.0", features = ["derive"] }
-simple_logger = { version = "4.0", default-features = false, features = ["colors"] }
+simple_logger = { version = "5.0", default-features = false, features = ["colors"] }
 teloxide = { version = "0.12", default-features = false, features = ["macros", "ctrlc_handler", "rustls"] }
 tokio = { version = "1.26", features = ["macros", "rt", "rt-multi-thread"] }
 
